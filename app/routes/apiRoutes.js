@@ -1,7 +1,9 @@
 module.exports = function (app, db) {
     // CRUD
     app.get('/api/all', function (req, res) {
-        db.Person.findAll({}).then(function (result) {
+        db.Person.findAll({
+          order: ['id']
+        }).then(function (result) {
             res.json(result);
         });
     });
@@ -123,7 +125,6 @@ module.exports = function (app, db) {
           });
         });
       });
-     
     })
 
     app.get('/api/add-data/', function(req, res){
