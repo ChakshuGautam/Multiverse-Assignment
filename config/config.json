@@ -1,0 +1,40 @@
+{
+  "development": {
+    "username": "qazewcjugmvxhy",
+    "password": "326abee5c3a4f5e017671d520c4e328072ba6fdb0f44bc1319857090c6934062",
+    "database": "dgibpbuhlgot1",
+    "host": "ec2-54-221-236-144.compute-1.amazonaws.com",
+    "port": 5432,
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": true
+    },
+    "pool": {
+      "max": 20,
+      "min": 1,
+      "idle": 1000000
+    }
+  },
+  "test": {
+    "username": "qazewcjugmvxhy",
+    "password": "326abee5c3a4f5e017671d520c4e328072ba6fdb0f44bc1319857090c6934062",
+    "database": "dgibpbuhlgot1",
+    "host": "ec2-54-221-236-144.compute-1.amazonaws.com",
+    "port": 5432,
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": true
+    }
+  },
+  "production": {
+    "username": "qazewcjugmvxhy",
+    "password": "326abee5c3a4f5e017671d520c4e328072ba6fdb0f44bc1319857090c6934062",
+    "database": "dgibpbuhlgot1",
+    "host": "ec2-54-221-236-144.compute-1.amazonaws.com",
+    "port": 5432,
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": true
+    }
+  }
+}
