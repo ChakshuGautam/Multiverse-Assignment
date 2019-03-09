@@ -1,5 +1,7 @@
+var compression = require('compression')
 var express = require('express');
 var app = express();
+app.use(compression())
 var bodyParser = require('body-parser');
 var db = require('./models');
 var apiRoutes = require('./app/routes/apiRoutes.js');
