@@ -24,5 +24,7 @@ https://cryptic-shore-11289.herokuapp.com
 - [x] Check if families with given family_id have same power in all universes. If powers don’t match then family_id is unbalanced
 - [x] Find unbalanced family_ids
 - [x] Seed Data Added as CSV
-- [ ] Balance given family_id
+- [x] Balance given family_id
+- [ ] Improve API Design
+- [ ] Implement error handling
 
