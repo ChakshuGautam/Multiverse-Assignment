@@ -1,5 +1,4 @@
 module.exports = function (app, db) {
-    // CRUD
     app.get('/api/all', function (req, res) {
         db.Person.findAll({
           order: ['id']
@@ -42,14 +41,73 @@ module.exports = function (app, db) {
 
     app.get('/api/families/:id', function (req, res){
       db.Person.findAll({
+          attributes: ['family'],
+          group: ['family'],
           where: {
             universe: req.params.id
           }
       }).then(function(result){
+        result.toJSON;
+        console.log(result.length)
         let onlyUnique = (value, index, self) => self.indexOf(value) === index;
         res.json({
           message: `All families in universe: ${req.params.id}`, 
           data: result.map((person => person.family)).filter(onlyUnique)
+        });
+      });
+    })
+
+    app.get('/api/balance-family/:id', function(req, res){
+      db.Person.findAll({
+        where: {
+          family: req.params.id
+        },
+        group: ['universe'],
+        attributes: [
+          'universe', 
+          [db.sequelize.fn('COUNT', db.sequelize.col('id')), 'totalPersonInFamily'], 
+          [db.sequelize.fn('SUM', db.sequelize.col('power')), 'totalPower']
+        ],
+        order: ['universe'],
+        raw: true,
+      }).then((result) => {
+        result.toJSON;
+        const averageTotalPower = Math.floor(result.map(r => parseInt(r.totalPower)).reduce((total, current) => total + current)/result.length);
+        
+        // The objective is to make minimum changes to database. So using a greedy approach here.
+        // So we will just change one row so that the whole family complies to the resulting average.
+        const deficitPerUniverse = result.map((universe) => ({
+          universe: universe.universe, 
+          deficit: averageTotalPower - parseInt(universe.totalPower),
+          currentPower: universe.totalPower
+        }));
+        Promise.all(deficitPerUniverse.map((uni) => {
+          if(uni.deficit === 0) return;
+          return db.Person.findOne({
+            where: {
+              family: req.params.id,
+              universe: uni.universe
+            }
+          }).then(person => {
+            console.log(`Found one person of universe ${person.universe} and we need to change the power to ${uni.deficit + person.power} while his current power is ${person.power}`);
+            db.Person.update({
+              power: uni.deficit + person.power
+            }, {
+                where: {
+                    id: person.id
+                }
+            }).then(function (result) {
+                return;
+            });
+          })
+        })).then(values => {
+          res.json({
+            success: true,
+            data: {
+              average: averageTotalPower,
+              previousDeficits: deficitPerUniverse
+            }
+          });
         });
       });
     })
@@ -133,20 +191,22 @@ module.exports = function (app, db) {
         let fs= require('fs');
         var stream = fs.createReadStream("initial-data.csv");
         let counter = 0;
+        persons = [];
         csv.fromStream(stream, {headers : true})
           .on("data", function(data){
-              db.Person.create({
-                universe: data.universe,
-                family: data.family,
-                power: data.power
-            }).then(function (result) {
-                counter++;
-                if(counter == 499){
-                  res.json({"success": true})
-                }
-            });
+            persons.push({
+              universe: data.universe,
+              family: data.family,
+              power: data.power
+            })
           })
           .on("end", function(){
+            db.Person.bulkCreate(
+              persons, 
+              {
+                ignoreDuplicates: false
+              }
+            ).then(() => res.json({"success": true}));
             console.log("CSV read ended");
           })
           .on("error", function(){
