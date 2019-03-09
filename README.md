@@ -25,6 +25,6 @@ https://cryptic-shore-11289.herokuapp.com
 - [x] Find unbalanced family_ids
 - [x] Seed Data Added as CSV
 - [x] Balance given family_id
+- [ ] Speed improvements in the balance API.
 - [ ] Improve API Design
 - [ ] Implement error handling
-
